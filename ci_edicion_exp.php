@@ -42,7 +42,7 @@
 		//protected $s__img_tratar = array();
 		protected $s__img_salvadas = array();
         protected $s__tt_provincia = null;
-        protected $s__tribunal_dependencia = null;
+        protected $s__tribunal_dependencia = null; 
 
 	
 
@@ -61,6 +61,31 @@
 			'entorno_local'=>$this->s__entorno_local);
 	}
 //--------------------------------------------------------------------------------------------
+	#------ función con ajax para leer los datos de un Acta
+	// function ajax__get_datos_unicidad($id, toba_ajax_respuesta $respuesta)
+	// {    
+		
+	// 	$valor=false;
+	// 	$datos = $this->get_relacion()->tabla('acta')->get_filas();
+	// 	$cantidad=count($datos);
+	// 	if(!$this->get_relacion()->tabla('acta')->hay_cursor()) //seleccion
+	// 	{
+	// 		for ($i=0; $i < $cantidad ; $i++) { 
+	// 		// $valor[$i]=array('Infractor'=>$datos[$i]['id_tipoi'],$id[0],
+	// 		// 				'acta'=>$datos[$i]['ac_nro'],$id[1],
+	// 		// 	'anio'=>$datos[$i]['ac_anio'],$id[2],
+	// 		// 	'valor'=>false);
+	// 		if (($datos[$i]['id_tipoi'] == $id[0]) && ($datos[$i]['ac_nro'] == $id[1]) && ($datos[$i]['ac_anio'] == $id[2])){
+	// 			$valor=true;
+				
+	// 			}
+			
+	// 	}
+	// 	}
+		
+	// 	$respuesta->set($valor);
+	// }
+
 //--------------------------------------------------------------------------------------------
 	function ini()
 	{
@@ -502,11 +527,12 @@ function salvar_foto_acciones($datos)
 			$this->s__fechaMod = $datos['fe_mod'];
 			$this->s__numExpe = $datos['n_expediente'];
 
+
 //------------------------------------------- USUARIOS -----------------------------------------------------------------
 //---------------------------- Lo q los usuarios pueden ver del form Expediente ----------------------------------------
 			$this->s__usuario = consultas::get_pf();
-			if($this->s__usuario == 'supervisor')
-			{
+			// if($this->s__usuario == 'supervisor')
+			// {
 				if(!$this->get_relacion()->tabla('expediente')->esta_cargada()) // si no existe el nro de exp, no se ponen los campos en solo lectura
 				{
 					$form->ef('id_prioridad')->set_solo_lectura(false);
@@ -515,27 +541,27 @@ function salvar_foto_acciones($datos)
 				{
 					$form->ef('id_prioridad')->set_solo_lectura();
 				}
-			}
-			elseif($this->s__usuario == 'carga' || $this->s__usuario == 'carga_juzgado')
-			{
-				if(!$this->get_relacion()->tabla('expediente')->esta_cargada()) // si no existe el nro de exp, no se ponen los campos en solo lectura
-				{
-					$this->dep('frm_expediente')->set_solo_lectura(array('id_prioridad','id_tipo_persona','identidad_verif','c05tipodoc','nrodoc',
-						'nrocuit','sexo','apyn','domicilio'),false);
+			// }
+			// elseif($this->s__usuario == 'carga' || $this->s__usuario == 'carga_juzgado')
+			// {
+			// 	if(!$this->get_relacion()->tabla('expediente')->esta_cargada()) // si no existe el nro de exp, no se ponen los campos en solo lectura
+			// 	{
+			// 		$this->dep('frm_expediente')->set_solo_lectura(array('id_prioridad','id_tipo_persona','identidad_verif','c05tipodoc','nrodoc',
+			// 			'nrocuit','sexo','apyn','domicilio'),false);
 
-				}
-				else // si existe se ponen los campos en solo lectura
-				{
-					$this->dep('frm_expediente')->set_solo_lectura(array('id_prioridad','id_tipo_persona','identidad_verif','c05tipodoc','nrodoc',
-						'nrocuit','sexo','apyn','domicilio'));
+			// 	}
+			// 	// else // si existe se ponen los campos en solo lectura
+			// 	// {
+			// 	// 	$this->dep('frm_expediente')->set_solo_lectura(array('id_prioridad','id_tipo_persona','identidad_verif','c05tipodoc','nrodoc',
+			// 	// 		'nrocuit','sexo','apyn','domicilio'));
 
-				}
-			}
+			// 	// }
+			// }
 
 //--------------------------------------------------------------------------------------------
 
 			$datos['n_expediente'] = substr($datos['n_expediente'],0,4).'-'.substr($datos['n_expediente'],4,2).'-'.substr($datos['n_expediente'],6,2).'-'.substr($datos['n_expediente'],8,8); /** Modifique 14/12 */
-
+		
 			if(isset($datos['id_tribunal'])) // detecta si el tribunal existe o no
 			{
 				$sql = "Select id_tribunal, descripcion From tribunal.tribunales where id_tribunal = {$datos['id_tribunal']}";
@@ -621,9 +647,8 @@ function salvar_foto_acciones($datos)
 
 			//----- le quito los guiones al nro de expediente para q impacte sin guiones en la tabla -----
 			$exp = explode('-', $datos['n_expediente']);
-			var_dump($exp);
 			$datos['n_expediente'] = $exp[0].$exp[1].$exp[2].$exp[3];
-			var_dump($datos);
+
 			//-- Guardo la prioridad, posiblemente modificada, del Expediente
 			$this->s__distintop = false;
 			$this->s__prinew = $datos['id_prioridad'];
@@ -665,6 +690,7 @@ function salvar_foto_acciones($datos)
 			}
 			$cursor = $this->get_relacion()->tabla('expediente')->nueva_fila($datos);
 			$this->get_relacion()->tabla('expediente')->set_cursor($cursor);
+			
 		}
 
 	}
@@ -675,17 +701,17 @@ function salvar_foto_acciones($datos)
 
 	function conf__pant_actas(toba_ei_pantalla $pantalla)
 	{
-		if($this->s__usuario <> 'superusuario')
-		{
-			$pantalla->eliminar_dep('frm_motivo_resorteo');
-		}
-		if($this->s__usuario == 'carga' || $this->s__usuario == 'carga_juzgado')
-		{
-			if($this->get_relacion()->tabla('expediente')->esta_cargada())
-			{
-				$pantalla->eliminar_dep('frm_actas');
-			}
-		}
+		// if($this->s__usuario <> 'superusuario')
+		// {
+		// 	$pantalla->eliminar_dep('frm_motivo_resorteo');
+		// }
+		// if($this->s__usuario == 'carga' || $this->s__usuario == 'carga_juzgado')
+		// {
+		// 	if($this->get_relacion()->tabla('expediente')->esta_cargada())
+		// 	{
+		// 		$pantalla->eliminar_dep('frm_actas');
+		// 	}
+		// }
 	}
 
 //---------------------------------------------------------------------------------------------------------------
@@ -960,7 +986,8 @@ function salvar_foto_acciones($datos)
 					$form->ef('ac_anio')->set_estado(date('Y'));
 				}
 			}
-		}   
+		}  
+
 	}
 
 
@@ -973,6 +1000,7 @@ function salvar_foto_acciones($datos)
 		{
         // si es menor a 8 digitos, lo completa con 0.
 			$datos['ac_nro']= str_pad($datos['ac_nro'],8,'0',STR_PAD_LEFT);
+			$acta_vieja= str_pad($datos['ac_nro'],6,'0',STR_PAD_LEFT);
 		}
         $datos['dominio'] =preg_replace('[\s+]',"", $datos['dominio']);//---- le quito los espacios de la cadena enviada
 
@@ -980,9 +1008,11 @@ function salvar_foto_acciones($datos)
         if($datos['id_tipoi'] == '00')
         {
         	$datos['acta_completa'] = $datos['id_medio'].$datos['id_provincia'].$datos['id_municipio'].substr($datos['ac_anio'],2,2).$datos['ac_nro'];
+        	$acta_vieja_completa = $datos['id_medio'].$datos['id_provincia'].$datos['id_municipio'].substr($datos['ac_anio'],2,2).$acta_vieja;
         	$datos['dominio'] = mb_convert_case($datos['dominio'], MB_CASE_UPPER, "LATIN1");
         }else{
         	$datos['acta_completa'] = $datos['ac_anio'].$datos['id_tipoi'].$datos['ac_nro'];
+        	$acta_vieja_completa = $datos['ac_anio'].$datos['id_tipoi'].$acta_vieja;
         	$datos['dominio'] = mb_convert_case($datos['dominio'], MB_CASE_UPPER, "LATIN1");
         }
         $datos['usu_alta'] = toba::usuario()->get_id();
@@ -1060,38 +1090,60 @@ function salvar_foto_acciones($datos)
 //---------- Primero verifíco q no exista en la BD y luego en el DT -----------------------------------------------
         //$acta_con = "Select ac_nro From tribunal.actas Where ac_nro ='". $datos['ac_nro']."' and id_tipoi = '".$datos['id_tipoi']."' and ac_anio = '".$datos['ac_anio']."'";
         $banderaI="no";
+
         $acta_con = "Select acta_completa From tribunal.actas Where acta_completa = '".$datos['acta_completa']."'";
         $acta_query = toba::db()->consultar($acta_con);
-        if(count($acta_query) > 0)
+
+        //Comparo con la longitud del acta vieja 6 digitos
+        $acta_con_vie = "Select acta_completa From tribunal.actas Where acta_completa = '".$acta_vieja_completa."'";
+        $acta_query_vie = toba::db()->consultar($acta_con_vie);
+        if((count($acta_query) > 0) or (count($acta_query_vie) > 0))
         {
         	toba::notificacion()->error('El Nro. de Acta ya existe');
         }
         else //-------- el acta no se encuentra en la BD -------
         {
+        	$cursores=null;
         	$acta = $this->get_relacion()->tabla('acta')->get_filas();
+        	// if (in_array($id_nodo, $ids)) {
+        
         	if(count($acta) > 0)
-        	{
-
-        		foreach($acta as $i => $fila)
+        	{ 
+        		$cursores = $this->get_relacion()->tabla('acta')->get_id_fila_condicion(array('acta_completa' => $datos['acta_completa']));
+        		 
+        		// foreach($acta as $i => $fila)
+        		// {
+        		// 	if($acta[$i]['acta_completa'] == $datos['acta_completa'])
+        		// 	{
+          //               unset($datos['acta_completa']); //limpio el nro acta
+          //               toba::notificacion()->error('El Nro. de Acta ya existe');
+          //           }
+          //       }
+        		}
+        		
+        		
+        		if (count($cursores[0])>0) {
+        			unset($datos['acta_completa']); //limpio el nro acta
+          			toba::notificacion()->error('El Nro. de Acta ya existe');
+          			// echo "aqui";
+        		}
+        		else
         		{
-        			if($acta[$i]['acta_completa'] == $datos['acta_completa'])
-        			{
-                        unset($datos['acta_completa']); //limpio el nro acta
-                        toba::notificacion()->error('El Nro. de Acta ya existe');
-                    }
-                }
-                if(isset($datos['acta_completa']))// si no esta vacia
+        		if(isset($datos['acta_completa']))// si no esta vacia
                 {
                 	$cursor=$this->get_relacion()->tabla('acta')->nueva_fila($datos); $this->s__acta_nueva = true;
                 	$this->get_relacion()->tabla('acta')->set_cursor($cursor);
                 	$banderaI="si";
                 }
-            }else{
+            
+            // else{
 
-            	$cursor=$this->get_relacion()->tabla('acta')->nueva_fila($datos); $this->s__acta_nueva = true;
-            	$this->get_relacion()->tabla('acta')->set_cursor($cursor);
-            	$banderaI="si";
-            }
+            // 	$cursor=$this->get_relacion()->tabla('acta')->nueva_fila($datos); $this->s__acta_nueva = true;
+            // 	$this->get_relacion()->tabla('acta')->set_cursor($cursor);
+            // 	$banderaI="si";
+            // }	
+        		}
+                
         }
         if ($banderaI=="si"){
         	//cargo una image
@@ -1139,15 +1191,18 @@ function salvar_foto_acciones($datos)
         $con = strlen($datos['ac_nro']);
         if($con < 8){
         	$datos['ac_nro']= str_pad($datos['ac_nro'],8,'0',STR_PAD_LEFT);
+        	$acta_vieja=str_pad($datos['ac_nro'],6,'0',STR_PAD_LEFT);
         }
 
         if($datos['id_tipoi'] == '00')
         {
         	$datos['acta_completa'] = $datos['id_medio'].$datos['id_provincia'].$datos['id_municipio'].substr($datos['ac_anio'],2,2).$datos['ac_nro'];
+        	$acta_vieja_completa = $datos['id_medio'].$datos['id_provincia'].$datos['id_municipio'].substr($datos['ac_anio'],2,2).$acta_vieja;
         	$datos['dominio'] = mb_convert_case($datos['dominio'], MB_CASE_UPPER, "LATIN1");
         }
         else{
         	$datos['acta_completa'] = $datos['ac_anio'].$datos['id_tipoi'].$datos['ac_nro'];
+        	$acta_vieja_completa = $datos['ac_anio'].$datos['id_tipoi'].$datos['ac_nro'];
         	$datos['dominio'] = mb_convert_case($datos['dominio'], MB_CASE_UPPER, "LATIN1");
         	if($datos['secuestro'] == ''){
         		$datos['secuestro'] = null;
@@ -1169,7 +1224,13 @@ function salvar_foto_acciones($datos)
 
         	$acta_query = toba::db()->consultar($acta_con);
 
-        	if($acta_query){
+        	$acta_con_vie = "Select acta_completa 
+        	From tribunal.actas 
+        	Where acta_completa = '".$datos['acta_completa']."'";
+
+        	$acta_query_vie = toba::db()->consultar($acta_con_vie);
+
+        	if($acta_query or $acta_query_vie){
         		toba::notificacion()->error('El Nro. de Acta ya existe');
         		$bandera = 'no modificar';
         		$this->get_relacion()->tabla('acta')->resetear_cursor();
@@ -1177,20 +1238,29 @@ function salvar_foto_acciones($datos)
         	}
             else //-------- el acta no se encuentra en la BD -------
             {
+            	$cursores=null;
             	$acta = $this->get_relacion()->tabla('acta')->get_filas();
             	if(count($acta) > 0)
             	{
-            		foreach($acta as $i => $fila)
-            		{
-            			if($acta[$i]['acta_completa'] == $datos['acta_completa'])
-            			{
-                            unset($datos['acta_completa']); //limpio el nro acta
-                            toba::notificacion()->error('El Nro. de Acta ya existe');
-                            $bandera = 'no modificar';
-                            $this->get_relacion()->tabla('acta')->resetear_cursor();
-                            $this->evento('procesar')->ocultar();
-                        }
-                    }
+            		$cursores = $this->get_relacion()->tabla('acta')->get_id_fila_condicion(array('acta_completa' => $datos['acta_completa']));
+            		if (!empty($cursores)) {
+        			unset($datos['acta_completa']); //limpio el nro acta
+          			toba::notificacion()->error('El Nro. de Acta ya existe');
+          			$bandera = 'no modificar';
+          			$this->get_relacion()->tabla('acta')->resetear_cursor();
+              		$this->evento('procesar')->ocultar();
+        		}
+            		// foreach($acta as $i => $fila)
+            		// {
+            		// 	if($acta[$i]['acta_completa'] == $datos['acta_completa'])
+            		// 	{
+              //               unset($datos['acta_completa']); //limpio el nro acta
+              //               toba::notificacion()->error('El Nro. de Acta ya existe');
+              //               $bandera = 'no modificar';
+              //               $this->get_relacion()->tabla('acta')->resetear_cursor();
+              //               $this->evento('procesar')->ocultar();
+              //           }
+              //       }
 
                     if(isset($datos['acta_completa']))// si no esta vacia
                     {
@@ -1561,8 +1631,10 @@ function salvar_foto_acciones($datos)
                 	if($acta[0]['id_tipoi'] == '00' and $medio == 'radar/pda')
                 	{
                 		$this->asignacion($exp,$acta,$nro_acta);
+                		
                 	}else{
                 		$this->sorteo($exp,$acta,$nro_acta);
+                		
                 	}
 
                 }
@@ -1619,16 +1691,19 @@ function salvar_foto_acciones($datos)
                 			}
                 		}else{
                 			$exp['n_expediente'] = $acta[0]['ac_anio'].$acta[0]['id_tipoi'].$acta[0]['id_medio'].$nro_acta;
+                			
                 			$this->get_relacion()->tabla('expediente')->set($exp);
                 		}
-                	}elseif($this->s__usuario == 'supervisor')
-                	{
-                		$exp['n_expediente'] = $acta[0]['ac_anio'].$acta[0]['id_tipoi'].$acta[0]['id_medio'].$nro_acta;
-                		$this->get_relacion()->tabla('expediente')->set($exp);
                 	}
+                	// elseif($this->s__usuario == 'supervisor')
+                	// {
+                	// 	$exp['n_expediente'] = $acta[0]['ac_anio'].$acta[0]['id_tipoi'].$acta[0]['id_medio'].$nro_acta;
+                	// 	$this->get_relacion()->tabla('expediente')->set($exp);
+                	// }
                 }
 
 //-------------------------------- Controlo que si es Urgente,tenga un trámite y si es Comun,no lo tenga ----------------
+                try{
                 if($this->s__tramite == 'existe')
                 {
 
@@ -1651,6 +1726,20 @@ function salvar_foto_acciones($datos)
                 		$this->controlador()->set_pantalla('pant_inicial_exp');
                 	}
                 }
+                }
+    		catch(toba_error $e){
+    			
+    			$sql = "SELECT descripcion FROM public.errores_sql WHERE id_sqlstate = '".$e->get_sqlstate()."'";
+    			$rs = toba::db()->consultar($sql);
+    			
+    			if(count($rs) > 0){
+    				$mensaje = $rs[0]['descripcion'];
+    			}
+    			else{
+    				$mensaje = $e->get_mensaje_motor();
+    			}
+    			toba::notificacion()->agregar($mensaje);
+    		}
 //-------------------------------------------------- Fin del Control --------------------------------------------------------
             }
         }else{
@@ -2134,9 +2223,7 @@ function salvar_foto_acciones($datos)
     	$fecha_actual = date('d-m-Y');
     	$id_dependencia = "SELECT id_dep, c01leyen FROM tribunal.dependencias_habilitadas where c01depresu::BIGINT =".$this->s__tribunal_dependencia;
 		$rs = toba::db()->consultar($id_dependencia);
-		$datos['desc_dependencia']=$rs[0]['c01leyen'];
-		$datos['id_dependencia']=$rs[0]['id_dep'];
-
+		
     	
     	if($this->get_relacion()->tabla('acciones')->hay_cursor())
     	{
@@ -2164,13 +2251,22 @@ function salvar_foto_acciones($datos)
 					$nombreimagen[1].
 					"' type='application/pdf' height='300' width='500'>");
 			}
+       
         }
         else{
+        //$datos['desc_dependencia']=$rs[0]['c01leyen'];
+		//$datos['id_dependencia']=$rs[0]['id_dep'];
 
+        	       	
+        	$form->ef('desc_dependencia')->set_estado($rs[0]['c01leyen']);
+        	 
             //$form->ef('fecha')->set_estado($fecha_actual); //muestro la fecha actual en el campo fecha de alta
             //$form->ef('fecha')->set_solo_lectura();
 
             $form->set_datos($datos);
+            $datos['desc_dependencia']=$rs[0]['c01leyen'];
+			$datos['id_dependencia']=$rs[0]['id_dep'];
+
         }
         
         
@@ -2194,11 +2290,11 @@ function salvar_foto_acciones($datos)
     		$datos['fechamod'] = null;
 
     		
-			$cursor =$this->get_relacion()->tabla('acciones')->nueva_fila($datos);
+			
 			//cargo una image
 			$carpeta=$this->existe_carpeta();
 			$auxiliar=$this->get_nombre_foto_acciones($carpeta);
-			
+			$cursor =$this->get_relacion()->tabla('acciones')->nueva_fila($datos);
 	
 			if ($this->s__entorno_local) {
 			   
